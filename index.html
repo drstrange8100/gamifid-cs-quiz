@@ -1,0 +1,2105 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QUIZ // BBIT Placement Arena - Daily 10 AM Drop</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f5ff',
+              100: '#e5edff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            accent: {
+              purple: '#6d28d9',
+              indigo: '#4f46e5',
+              violet: '#7c3aed',
+              dark: '#0f172a'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace']
+          },
+          boxShadow: {
+            'card': '0 4px 18px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03)',
+            'card-hover': '0 14px 28px -4px rgba(37, 99, 235, 0.12), 0 6px 12px -2px rgba(15, 23, 42, 0.04)',
+            'btn-blue': '0 8px 18px -4px rgba(37, 99, 235, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Ambient Organic Shapes matching UI screenshot */
+    .blob-left-lower {
+      position: fixed;
+      left: -130px;
+      bottom: 8%;
+      width: 260px;
+      height: 420px;
+      background: radial-gradient(circle at 60% 50%, #6366f1 0%, #4338ca 100%);
+      border-radius: 45% 55% 60% 40% / 55% 45% 55% 45%;
+      z-index: 1;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .blob-right-mid {
+      position: fixed;
+      right: -100px;
+      top: 14%;
+      width: 220px;
+      height: 400px;
+      background: radial-gradient(circle at 40% 50%, #4f46e5 0%, #3730a3 100%);
+      border-radius: 50% 50% 40% 60% / 40% 60% 50% 50%;
+      z-index: 1;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .float-cross-icon {
+      position: fixed;
+      right: 32px;
+      bottom: 22%;
+      color: #6366f1;
+      font-size: 34px;
+      font-weight: 800;
+      opacity: 0.85;
+      user-select: none;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .float-cross-icon-top {
+      position: fixed;
+      right: 24px;
+      top: 14%;
+      color: #818cf8;
+      font-size: 26px;
+      font-weight: 800;
+      opacity: 0.7;
+      user-select: none;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Outer Canvas Frame matching yellow-rimmed mockup from reference */
+    .viewport-canvas {
+      border: 5px solid #f59e0b;
+      border-radius: 24px;
+      margin: 12px;
+      min-height: calc(100vh - 24px);
+      position: relative;
+      background-color: #ffffff;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    @media (max-width: 768px) {
+      .viewport-canvas {
+        border-width: 3px;
+        margin: 6px;
+        border-radius: 14px;
+      }
+      .blob-left-lower, .blob-right-mid, .float-cross-icon, .float-cross-icon-top {
+        display: none;
+      }
+    }
+
+    pre::-webkit-scrollbar {
+      height: 6px;
+    }
+    pre::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+
+    @keyframes subtleGlow {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.02); }
+    }
+    .ai-generating-pulse {
+      animation: subtleGlow 1.8s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Ambient background graphics -->
+  <div class="blob-left-lower"></div>
+  <div class="blob-right-mid"></div>
+  <div class="float-cross-icon">+</div>
+  <div class="float-cross-icon-top">+</div>
+
+  <!-- Main Viewport Canvas -->
+  <div class="viewport-canvas">
+
+    <!-- Top Navigation Header -->
+    <header class="w-full px-6 py-4 flex items-center justify-between border-b border-slate-100 bg-white/95 backdrop-blur-md rounded-t-2xl z-30">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3 cursor-pointer select-none" onclick="navigateTo('home')">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-full border-[3.5px] border-[#2563eb] flex items-center justify-center font-black text-xl text-[#2563eb] relative">
+            Q
+            <div class="absolute -bottom-1 -right-0.5 w-3.5 h-1.5 bg-[#f59e0b] rounded-full rotate-45"></div>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xl font-black tracking-tight text-slate-900 leading-none">UIZ</span>
+          <span class="text-[9px] font-bold tracking-widest text-[#2563eb] uppercase mt-0.5">Arena Engine</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
+        <button onclick="navigateTo('home')" id="nav-btn-home" class="text-[#2563eb] transition-colors">Home</button>
+        <button onclick="openRulesModal()" class="hover:text-[#2563eb] transition-colors">Rules</button>
+        <button onclick="navigateTo('leaderboard')" id="nav-btn-leaderboard" class="hover:text-[#2563eb] transition-colors">Leaderboard</button>
+        <button onclick="openApiConfigModal()" class="hover:text-[#2563eb] transition-colors flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+          <span>Gemini AI</span>
+        </button>
+        <button onclick="openHelpModal()" class="hover:text-[#2563eb] transition-colors">Help</button>
+      </nav>
+
+      <!-- Right Controls: 10 AM Drop Countdown & Profile Pill -->
+      <div class="flex items-center gap-3">
+        <!-- 10 AM Refresh Ticker -->
+        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-mono font-bold" title="Time until tomorrow's 10:00 AM fresh question drop">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600"></i>
+          <span class="text-[11px] font-sans font-semibold text-amber-900">Next 10 AM Drop:</span>
+          <span id="header-drop-countdown">--:--:--</span>
+        </div>
+
+        <!-- Audio FX Toggle -->
+        <button onclick="toggleAudio()" id="sound-toggle-btn" title="Toggle Sound FX" class="p-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
+          <i id="sound-icon" data-lucide="volume-2" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Contestant User Profile Pill -->
+        <div id="user-profile-badge">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col justify-center px-4 sm:px-8 py-8 relative z-20">
+
+      <!-- =========================================================================
+           VIEW 1: TOPIC SELECTION WITH DAILY 10 AM ENGINE
+           ========================================================================= -->
+      <section id="view-home" class="max-w-5xl w-full mx-auto my-auto text-center space-y-6 transition-all">
+        
+        <!-- Header Text -->
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs font-bold text-[#2563eb]">
+            <i data-lucide="zap" class="w-3.5 h-3.5 fill-[#2563eb]"></i>
+            <span id="daily-cycle-label">Daily 10:00 AM Edition Active</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 uppercase">
+            Personalize Your <span class="text-[#2563eb]">Quiz Experience</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto font-normal">
+            Choose your technical track. Every morning at <strong class="text-slate-900">10:00 AM</strong>, 5 brand new tricky questions are automatically unlocked per topic with full compiler reasons &amp; targeted YouTube video links.
+          </p>
+        </div>
+
+        <!-- Mode Toggle: Daily 5 vs Full 15 -->
+        <div class="inline-flex p-1.5 bg-slate-100 rounded-2xl border border-slate-200/90 max-w-md mx-auto shadow-inner">
+          <button id="mode-btn-daily5" onclick="setQuizMode('daily5')" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all bg-[#2563eb] text-white shadow-btn-blue">
+            <i data-lucide="calendar" class="w-4 h-4"></i>
+            <span>Daily 5 Drop</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono">10 AM New</span>
+          </button>
+          <button id="mode-btn-full15" onclick="setQuizMode('full15')" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all text-slate-600 hover:text-slate-900">
+            <i data-lucide="award" class="w-4 h-4"></i>
+            <span>15-Question Sprint</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-mono">Full Arena</span>
+          </button>
+        </div>
+
+        <!-- Mode Subtext Indicator -->
+        <div id="mode-description-banner" class="text-xs font-medium text-slate-600 flex items-center justify-center gap-1.5">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+          <span id="mode-desc-text">Daily 5 Mode Active: 5 fresh placement questions generated today with unpredictable option ordering.</span>
+        </div>
+
+        <!-- 8-Card Topic Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto pt-1" id="topic-selector-grid">
+          
+          <!-- Card 1: C Pointers -->
+          <button onclick="triggerQuizStart('c_lang')" class="group p-5 bg-white border border-slate-200/90 rounded-2xl shadow-card hover:shadow-card-hover hover:border-[#2563eb] text-left transition-all duration-200 flex flex-col justify-between h-36 active:scale-[0.98]">
+            <div class="flex justify-between items-start">
+              <span class="topic-count-pill text-[11px] font-bold font-mono px-2 py-0.5 rounded-full bg-blue-50 text-[#2563eb]">5 Questions</span>
+              <div class="w-8 h-8 rounded-lg bg-blue-50 text-[#2563eb] flex items-center justify-center group-hover:bg-[#2563eb] group-hover:text-white transition-colors">
+                <i data-lucide="cpu" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm group-hover:text-[#2563eb] transition-colors leading-snug">C Pointers &amp; Memory Allocation</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Arithmetic, Pointer Precedence &amp; Stack</p>
+            </div>
+          </button>
+
+          <!-- Card 2: Java OOP -->
+          <button onclick="triggerQuizStart('java_lang')" class="group p-5 bg-white border border-slate-200/90 rounded-2xl shadow-card hover:shadow-card-hover hover:border-[#2563eb] text-left transition-all duration-200 flex flex-col justify-between h-36 active:scale-[0.98]">
+            <div class="flex justify-between items-start">
+              <span class="topic-count-pill text-[11px] font-bold font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-600">5 Questions</span>
+              <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-[#2563eb] group-hover:text-white transition-colors">
+                <i data-lucide="coffee" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm group-hover:text-[#2563eb] transition-colors leading-snug">Java OOP &amp; Polymorphism</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Method Hiding, Virtual Dispatch &amp; Heap</p>
+            </div>
+          </button>
+
+          <!-- Card 3: Python Scope -->
+          <button onclick="triggerQuizStart('python_lang')" class="group p-5 bg-white border border-slate-200/90 rounded-2xl shadow-card hover:shadow-card-hover hover:border-[#2563eb] text-left transition-all duration-200 flex flex-col justify-between h-36 active:scale-[0.98]">
+            <div class="flex justify-between items-start">
+              <span class="topic-count-pill text-[11px] font-bold font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600">5 Questions</span>
+              <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-[#2563eb] group-hover:text-white transition-colors">
+                <i data-lucide="code-2" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm group-hover:text-[#2563eb] transition-colors leading-snug">Python Scope &amp; Closures</h3>
+              <p class="text-[11px] text-slate-400 mt-1">LEGB Rules, Mutable Defaults &amp; Lambdas</p>
+            </div>
+          </button>
+
+          <!-- Card 4: JavaScript Event Loop -->
+          <button onclick="triggerQuizStart('js_lang')" class="group p-5 bg-white border border-slate-200/90 rounded-2xl shadow-card hover:shadow-card-hover hover:border-[#2563eb] text-left transition-all duration-200 flex flex-col justify-between h-36 active:scale-[0.98]">
+            <div class="flex justify-between items-start">
+              <span class="topic-count-pill text-[11px] font-bold font-mono px-2 py-0.5 rounded-full bg-yellow-50 text-yellow-700">5 Questions</span>
+              <div class="w-8 h-8 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center group-hover:bg-[#2563eb] group-hover:text-white transition-colors">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm group-hover:text-[#2563eb] transition-colors leading-snug">JavaScript Event Loop &amp; Async</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Microtasks, Macrotasks &amp; Promises</p>
+            </div>
+          </button>
+
+          <!-- Card 5: C++ STL -->
+          <button onclick="triggerQuizStart('cpp_lang')" class="group p-5 bg-white border border-slate-200/90 rounded-2xl shadow-card hover:shadow-card-hover hover:border-[#2563eb] text-left transition-all duration-200 flex flex-col justify-between h-36 active:scale-[0.98]">
+            <div class="flex justify-between items-start">
+              <span class="topic-count-pill text-[11px] font-bold font-mono px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">5 Questions</span>
+              <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center group-hover:bg-[#2563eb] group-hover:text-white transition-colors">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm group-hover:text-[#2563eb] transition-colors leading-snug">C++ STL &amp; Modern Features</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Smart Pointers, R-Values &amp; Move Semantics</p>
+            </div>
+          </button>
+
+          <!-- Card 6: DSA -->
+          <button onclick="triggerQuizStart('dsa_track')" class="group p-5 bg-white border border-slate-200/90 rounded-2xl shadow-card hover:shadow-card-hover hover:border-[#2563eb] text-left transition-all duration-200 flex flex-col justify-between h-36 active:scale-[0.98]">
+            <div class="flex justify-between items-start">
+              <span class="topic-count-pill text-[11px] font-bold font-mono px-2 py-0.5 rounded-full bg-rose-50 text-rose-600">5 Questions</span>
+              <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center group-hover:bg-[#2563eb] group-hover:text-white transition-colors">
+                <i data-lucide="git-branch" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm group-hover:text-[#2563eb] transition-colors leading-snug">Data Structures &amp; Algorithms</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Recurrence, Trees &amp; Algorithmic Limits</p>
+            </div>
+          </button>
+
+          <!-- Card 7: SQL -->
+          <button onclick="triggerQuizStart('sql_track')" class="group p-5 bg-white border border-slate-200/90 rounded-2xl shadow-card hover:shadow-card-hover hover:border-[#2563eb] text-left transition-all duration-200 flex flex-col justify-between h-36 active:scale-[0.98]">
+            <div class="flex justify-between items-start">
+              <span class="topic-count-pill text-[11px] font-bold font-mono px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-600">5 Questions</span>
+              <div class="w-8 h-8 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center group-hover:bg-[#2563eb] group-hover:text-white transition-colors">
+                <i data-lucide="database" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm group-hover:text-[#2563eb] transition-colors leading-snug">SQL &amp; Relational Databases</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Indexes, Subqueries &amp; Join Nullability</p>
+            </div>
+          </button>
+
+          <!-- Card 8: Web Dev -->
+          <button onclick="triggerQuizStart('web_dev')" class="group p-5 bg-white border border-slate-200/90 rounded-2xl shadow-card hover:shadow-card-hover hover:border-[#2563eb] text-left transition-all duration-200 flex flex-col justify-between h-36 active:scale-[0.98]">
+            <div class="flex justify-between items-start">
+              <span class="topic-count-pill text-[11px] font-bold font-mono px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">5 Questions</span>
+              <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-[#2563eb] group-hover:text-white transition-colors">
+                <i data-lucide="globe" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm group-hover:text-[#2563eb] transition-colors leading-snug">Web Dev &amp; System APIs</h3>
+              <p class="text-[11px] text-slate-400 mt-1">CORS, Cache-Control &amp; Status Semantics</p>
+            </div>
+          </button>
+
+        </div>
+
+        <!-- Jumble & 10 AM Status Footnote -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 border border-slate-200 text-xs font-medium text-slate-600">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i>
+          <span>Auto 10:00 AM Question Refresh Active &bull; Options rotate unpredictably across A, B, C, and D</span>
+        </div>
+
+      </section>
+
+      <!-- =========================================================================
+           VIEW 2: LOADING / AI QUESTION SYNTHESIZING VIEW
+           ========================================================================= -->
+      <section id="view-loading" class="hidden max-w-md w-full mx-auto my-auto text-center space-y-5 p-8 bg-white border border-slate-200 rounded-3xl shadow-card ai-generating-pulse">
+        <div class="w-16 h-16 rounded-2xl bg-blue-50 text-[#2563eb] flex items-center justify-center mx-auto shadow-inner">
+          <i data-lucide="sparkles" class="w-8 h-8 animate-spin"></i>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-lg font-black text-slate-900" id="loading-title">Synthesizing Fresh Questions...</h3>
+          <p class="text-xs text-slate-500 font-medium" id="loading-subtitle">
+            Generating compiler traps, jumbling option keys, and fetching targeted YouTube tutorials.
+          </p>
+        </div>
+        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+          <div class="h-full bg-[#2563eb] animate-pulse" style="width: 80%;"></div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 3: QUIZ ARENA (60s Animated Timer, Jumbled A/B/C/D Buttons)
+           ========================================================================= -->
+      <section id="view-quiz" class="hidden max-w-3xl w-full mx-auto my-auto space-y-4">
+        
+        <!-- Header status card -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="arena-track-badge" class="px-2.5 py-0.5 text-xs font-bold font-mono rounded-full bg-blue-50 text-[#2563eb]">
+                C Pointers
+              </span>
+              <span id="arena-mode-badge" class="text-xs text-slate-500 font-semibold px-2 py-0.5 rounded-full bg-slate-100">
+                Daily 5 Drop
+              </span>
+            </div>
+            <h2 id="arena-q-indicator" class="text-lg font-black text-slate-900 mt-0.5">
+              Question 1 of 5
+            </h2>
+          </div>
+
+          <!-- 60-Second Timer -->
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200">
+              <i data-lucide="clock" class="w-4 h-4 text-[#2563eb]"></i>
+              <span id="arena-timer-txt" class="font-mono font-bold text-sm text-slate-800">60s</span>
+            </div>
+            <button onclick="abandonQuiz()" class="text-xs font-semibold text-slate-400 hover:text-rose-600 transition">
+              Quit Sprint
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+          <div id="arena-progress-bar" class="h-full bg-[#2563eb] transition-all duration-300" style="width: 20%;"></div>
+        </div>
+
+        <!-- Problem Snippet Card -->
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-card overflow-hidden">
+          
+          <div class="p-6 space-y-3.5">
+            <h3 id="arena-question-text" class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+              What is the output of the following code snippet?
+            </h3>
+
+            <!-- Code Snippet Display -->
+            <div class="p-4 bg-slate-950 rounded-xl overflow-x-auto text-xs sm:text-sm font-mono text-emerald-400 border border-slate-800 shadow-inner">
+              <pre><code id="arena-code-block">// Loading code snippet...</code></pre>
+            </div>
+          </div>
+
+          <!-- 4 Options A, B, C, D (Completely Jumbled & Unpredictable) -->
+          <div class="p-6 pt-0 space-y-2.5" id="arena-options-container">
+            <!-- Dynamically populated buttons -->
+          </div>
+
+          <!-- Feedback Drawer: Reason & Direct YouTube Learning Video Link -->
+          <div id="arena-feedback-drawer" class="hidden p-6 bg-slate-50 border-t border-slate-200 space-y-4">
+            
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <div id="feedback-icon" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white shrink-0">
+                  <!-- Check or Cross -->
+                </div>
+                <div>
+                  <h4 id="feedback-heading" class="font-extrabold text-sm sm:text-base text-slate-900">
+                    Correct Prediction!
+                  </h4>
+                  <p id="feedback-correct-key" class="text-xs font-mono text-slate-600">
+                    Expected: 10, 30, 30
+                  </p>
+                </div>
+              </div>
+
+              <!-- Next Question Button -->
+              <button onclick="advanceNextQuestion()" id="arena-btn-next" class="px-5 py-2.5 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs sm:text-sm font-bold shadow-btn-blue flex items-center gap-1.5 active:scale-95 transition-all">
+                <span>Continue</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <!-- Deep Compiler Logic Reason -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-700 space-y-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1">
+                <i data-lucide="file-code" class="w-3.5 h-3.5 text-[#2563eb]"></i> Line-by-Line Compiler / Runtime Reason:
+              </span>
+              <p id="feedback-explanation-body" class="leading-relaxed text-slate-700">
+                Detailed compiler step-by-step logic.
+              </p>
+            </div>
+
+            <!-- Targeted YouTube Concept Remediation Tutorial -->
+            <div class="p-3.5 bg-red-50/90 border border-red-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-red-600 flex items-center justify-center text-white shrink-0 shadow-sm">
+                  <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+                </div>
+                <div>
+                  <span class="text-[10px] uppercase font-bold text-red-700 tracking-wider">Concept Tutorial Video</span>
+                  <p id="feedback-video-title" class="text-xs font-bold text-slate-800">
+                    Pointer Arithmetic &amp; Operator Precedence
+                  </p>
+                </div>
+              </div>
+              <a id="feedback-video-anchor" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition shrink-0">
+                <span>Watch on YouTube</span>
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- =========================================================================
+           VIEW 4: SCORECARD (Finished, Accuracy %, WhatsApp Share)
+           ========================================================================= -->
+      <section id="view-score" class="hidden max-w-2xl w-full mx-auto my-auto space-y-6">
+        
+        <div class="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-9 shadow-card text-center space-y-6 relative overflow-hidden">
+          
+          <div class="w-16 h-16 rounded-2xl bg-blue-50 text-[#2563eb] flex items-center justify-center mx-auto shadow-inner">
+            <i data-lucide="award" class="w-9 h-9"></i>
+          </div>
+
+          <div class="space-y-1">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#2563eb] font-mono" id="card-mode-subtitle">
+              Daily 5 Challenge Complete
+            </span>
+            <h2 class="text-3xl font-black text-slate-900" id="card-hero-greeting">
+              Well Done, Contestant!
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500 font-medium" id="card-track-title">
+              Topic: C Pointers &amp; Memory Allocation
+            </p>
+          </div>
+
+          <!-- Triple Metric Display -->
+          <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+              <span class="text-xs text-slate-400 font-medium block">Total Score</span>
+              <span class="text-2xl font-black text-slate-900 font-mono" id="score-metric-correct">5 / 5</span>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+              <span class="text-xs text-slate-400 font-medium block">Accuracy</span>
+              <span class="text-2xl font-black text-[#2563eb] font-mono" id="score-metric-accuracy">100%</span>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+              <span class="text-xs text-slate-400 font-medium block">Time Taken</span>
+              <span class="text-2xl font-black text-slate-900 font-mono" id="score-metric-time">1m 45s</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons: WhatsApp Share & Leaderboard -->
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <!-- WhatsApp Share Button -->
+            <button onclick="shareViaWhatsApp()" class="px-5 py-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-900 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-green-500/20 active:scale-95 transition-all">
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              <span>Share Score on WhatsApp</span>
+            </button>
+
+            <!-- Copy Scorecard Text -->
+            <button onclick="copyScorecardText()" class="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-2 transition active:scale-95">
+              <i data-lucide="copy" class="w-4 h-4"></i>
+              <span>Copy Scorecard</span>
+            </button>
+
+            <!-- Check Leaderboard -->
+            <button onclick="navigateTo('leaderboard')" class="px-5 py-3 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-btn-blue transition active:scale-95">
+              <i data-lucide="trophy" class="w-4 h-4"></i>
+              <span>View Leaderboard</span>
+            </button>
+          </div>
+
+          <!-- Question Review Toggle -->
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-500">
+            <button onclick="toggleAnswerReviewList()" class="text-[#2563eb] hover:underline flex items-center gap-1">
+              <i data-lucide="list-checks" class="w-4 h-4"></i>
+              <span id="review-btn-label">Review All Answers &amp; Video Links</span>
+            </button>
+            <button onclick="navigateTo('home')" class="hover:text-slate-800 font-medium">
+              Try Another Topic &rarr;
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Collapsible Review List -->
+        <div id="scorecard-review-drawer" class="hidden space-y-3 pt-2">
+          <!-- Populated dynamically with full solution recap and YT links -->
+        </div>
+
+      </section>
+
+      <!-- =========================================================================
+           VIEW 5: CAMPUS LEADERBOARD (Strictly Real Contestants)
+           ========================================================================= -->
+      <section id="view-leaderboard" class="hidden max-w-4xl w-full mx-auto my-auto space-y-6">
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-card space-y-6">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center">
+                  <i data-lucide="trophy" class="w-5 h-5"></i>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-black text-slate-900">
+                  Campus Verified Leaderboard
+                </h2>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                Real student scores from authenticated Daily 5 Workouts and 15-question placement sprints.
+              </p>
+            </div>
+            
+            <button onclick="navigateTo('home')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition self-start sm:self-auto">
+              Take Quiz
+            </button>
+          </div>
+
+          <!-- Leaderboard Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead>
+                <tr class="text-slate-400 border-b border-slate-100 text-[11px] uppercase tracking-wider font-mono">
+                  <th class="py-3 px-3">Rank</th>
+                  <th class="py-3 px-3">Contestant</th>
+                  <th class="py-3 px-3">Mode &bull; Topic</th>
+                  <th class="py-3 px-3">Score</th>
+                  <th class="py-3 px-3">Accuracy</th>
+                  <th class="py-3 px-3 text-right">Date / Time</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-tbody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer Bar -->
+    <footer class="w-full px-8 py-5 border-t border-slate-100 bg-white/70 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <span class="font-bold text-slate-700">QUIZ Engine</span>
+        <button onclick="openRulesModal()" class="hover:text-slate-800">Rules</button>
+        <button onclick="openApiConfigModal()" class="hover:text-slate-800">Gemini AI</button>
+        <button onclick="openHelpModal()" class="hover:text-slate-800">Help</button>
+      </div>
+      <div>
+        <span>&copy; 2026 BBIT Hackathon &bull; ED-01 Gamified Code Output Prediction Arena</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- AUTHENTICATION MODAL -->
+  <div id="modal-auth" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-6">
+      
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563eb] flex items-center justify-center mx-auto">
+          <i data-lucide="user-check" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-xl font-black text-slate-900">
+          Contestant Registration
+        </h3>
+        <p class="text-xs text-slate-500 font-normal">
+          Enter your name and college email to take today's Daily 5 challenge and record verified leaderboard results.
+        </p>
+      </div>
+
+      <form id="form-contestant-login" onsubmit="handleRegistrationSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Contestant Full Name</label>
+          <input type="text" id="input-contestant-name" required placeholder="e.g. Khairy or Sayan Roy" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] text-sm text-slate-800 font-medium">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">College Email Address</label>
+          <input type="email" id="input-contestant-email" required placeholder="e.g. student@bbit.edu.in" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] text-sm text-slate-800 font-medium">
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold text-sm shadow-btn-blue transition active:scale-95 flex items-center justify-center gap-2">
+          <span>Enter Quiz Arena</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </form>
+
+      <p class="text-[11px] text-center text-slate-400">
+        Your credentials are saved locally in your browser to maintain your verified contest scores.
+      </p>
+
+    </div>
+  </div>
+
+  <!-- GEMINI API CONFIGURATION MODAL -->
+  <div id="modal-api-config" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+          <h3 class="font-extrabold text-slate-900 text-base">Google Gemini AI Configuration</h3>
+        </div>
+        <button onclick="closeApiConfigModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      
+      <p class="text-xs text-slate-500">
+        The Daily 5 Workout uses <code class="font-mono bg-slate-100 px-1 py-0.5 rounded">gemini-2.5-flash</code> with structured JSON outputs. If no key is entered, the app automatically runs on the offline placement engine.
+      </p>
+
+      <div class="space-y-1">
+        <label class="block text-xs font-bold text-slate-700 uppercase">Gemini API Key (Optional)</label>
+        <input type="password" id="input-gemini-key" placeholder="AIzaSy..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-[#2563eb]">
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="clearApiKey()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">
+          Remove
+        </button>
+        <button onclick="saveApiKey()" class="px-4 py-2 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-bold shadow-sm">
+          Save Key
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEST RULES MODAL -->
+  <div id="modal-info" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 class="font-extrabold text-slate-900 text-lg" id="modal-info-title">Contest Rules</h3>
+        <button onclick="closeInfoModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="modal-info-content" class="text-xs sm:text-sm text-slate-600 space-y-3 leading-relaxed">
+        <!-- Injected dynamically -->
+      </div>
+      <button onclick="closeInfoModal()" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-pill" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2">
+      <i data-lucide="info" class="w-4 h-4 text-[#2563eb]"></i>
+      <span id="toast-text-body">Notification message</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       JAVASCRIPT APPLICATION LOGIC
+       ========================================================================= -->
+  <script>
+    /* =========================================================================
+       1. WEB AUDIO PROCEDURAL SYNTHESIZER (DIFFERENT SOUND EFFECTS)
+       ========================================================================= */
+    class ProceduralAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      ensureContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playCorrectSound() {
+        if (!this.enabled) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+        try {
+          // Bright uplifting major triad chime: C6 (1046.5Hz) -> E6 (1318.5Hz) -> G6 (1567.9Hz)
+          const freqs = [1046.50, 1318.51, 1567.98];
+          freqs.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
+            gain.gain.setValueAtTime(0.18, this.ctx.currentTime + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + idx * 0.08 + 0.35);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(this.ctx.currentTime + idx * 0.08);
+            osc.stop(this.ctx.currentTime + idx * 0.08 + 0.35);
+          });
+        } catch (e) {
+          console.debug(e);
+        }
+      }
+      playWrongSound() {
+        if (!this.enabled) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+        try {
+          // Low descending sawtooth buzz (185Hz down to 125Hz)
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(185, this.ctx.currentTime);
+          osc.frequency.linearRampToValueAtTime(125, this.ctx.currentTime + 0.28);
+          gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.28);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime);
+          osc.stop(this.ctx.currentTime + 0.28);
+        } catch (e) {
+          console.debug(e);
+        }
+      }
+      playTick() {
+        if (!this.enabled) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(750, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.03);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime);
+          osc.stop(this.ctx.currentTime + 0.03);
+        } catch (e) {}
+      }
+    }
+    const soundEngine = new ProceduralAudioEngine();
+
+    function toggleAudio() {
+      soundEngine.enabled = !soundEngine.enabled;
+      const icon = document.getElementById('sound-icon');
+      if (soundEngine.enabled) {
+        icon.setAttribute('data-lucide', 'volume-2');
+        triggerToast("Audio sound effects enabled");
+      } else {
+        icon.setAttribute('data-lucide', 'volume-x');
+        triggerToast("Audio sound effects muted");
+      }
+      lucide.createIcons();
+    }
+
+    /* =========================================================================
+       2. CONTESTANT AUTHENTICATION & STORAGE
+       ========================================================================= */
+    const AUTH_STORAGE_KEY = 'bbit_contestant_user';
+    const LEADERBOARD_STORAGE_KEY = 'bbit_real_contestant_leaderboard';
+    const GEMINI_KEY_STORAGE = 'bbit_gemini_api_key';
+
+    let currentContestant = null;
+    let selectedQuizMode = 'daily5'; // 'daily5' or 'full15'
+
+    function initContestantSession() {
+      try {
+        const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+        if (stored) {
+          currentContestant = JSON.parse(stored);
+          renderUserProfilePill();
+          hideAuthModal();
+        } else {
+          showAuthModal();
+        }
+      } catch (e) {
+        showAuthModal();
+      }
+    }
+
+    function showAuthModal() {
+      document.getElementById('modal-auth').classList.remove('hidden');
+    }
+
+    function hideAuthModal() {
+      document.getElementById('modal-auth').classList.add('hidden');
+    }
+
+    function handleRegistrationSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('input-contestant-name').value.trim();
+      const email = document.getElementById('input-contestant-email').value.trim();
+
+      if (!name || !email) {
+        triggerToast("Please provide both name and email.");
+        return;
+      }
+
+      currentContestant = {
+        name: name,
+        email: email,
+        avatarInitials: name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'CX',
+        registeredAt: new Date().toISOString()
+      };
+
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(currentContestant));
+      renderUserProfilePill();
+      hideAuthModal();
+      triggerToast(`Welcome ${currentContestant.name}! You're logged in.`);
+    }
+
+    function switchOrLogoutContestant() {
+      if (confirm(`Currently signed in as ${currentContestant.name} (${currentContestant.email}). Would you like to switch contestant or logout?`)) {
+        localStorage.removeItem(AUTH_STORAGE_KEY);
+        currentContestant = null;
+        renderUserProfilePill();
+        showAuthModal();
+      }
+    }
+
+    function renderUserProfilePill() {
+      const container = document.getElementById('user-profile-badge');
+      if (currentContestant) {
+        container.innerHTML = `
+          <div class="flex items-center gap-2 p-1 pl-2 pr-3 rounded-full bg-slate-100 hover:bg-slate-200 transition cursor-pointer select-none" onclick="switchOrLogoutContestant()">
+            <div class="w-7 h-7 rounded-full bg-[#2563eb] text-white flex items-center justify-center font-bold text-xs shadow-sm">
+              ${currentContestant.avatarInitials}
+            </div>
+            <span class="text-xs font-bold text-slate-800 hidden sm:inline">${escapeHtml(currentContestant.name)}</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <button onclick="showAuthModal()" class="px-4 py-1.5 rounded-xl bg-[#2563eb] text-white text-xs font-bold shadow-btn-blue hover:bg-[#1d4ed8] transition">
+            Sign In
+          </button>
+        `;
+      }
+      lucide.createIcons();
+    }
+
+    function setQuizMode(mode) {
+      selectedQuizMode = mode;
+      const btnDaily = document.getElementById('mode-btn-daily5');
+      const btnFull = document.getElementById('mode-btn-full15');
+      const descText = document.getElementById('mode-desc-text');
+      const pills = document.querySelectorAll('.topic-count-pill');
+
+      if (mode === 'daily5') {
+        btnDaily.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all bg-[#2563eb] text-white shadow-btn-blue";
+        btnFull.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all text-slate-600 hover:text-slate-900";
+        descText.innerText = "Daily 5 Mode Active: 5 brand new questions for today powered by Gemini AI with randomized options & YouTube remedies.";
+        pills.forEach(p => p.innerText = "5 Questions");
+      } else {
+        btnFull.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all bg-[#2563eb] text-white shadow-btn-blue";
+        btnDaily.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all text-slate-600 hover:text-slate-900";
+        descText.innerText = "15-Question Sprint Active: 15 non-repeating questions testing comprehensive deep CS runtime fundamentals.";
+        pills.forEach(p => p.innerText = "15 Questions");
+      }
+    }
+
+    /* =========================================================================
+       3. 10:00 AM IST DAILY SEED & COUNTDOWN TICKER
+       ========================================================================= */
+    /**
+     * Determines the current active 10:00 AM IST cycle.
+     * Before 10:00 AM IST, the active epoch belongs to yesterday.
+     * At or after 10:00 AM IST, it flips to today.
+     */
+    function getDaily10AMEpoch() {
+      const now = new Date();
+      // Convert current browser time to IST (UTC+5:30)
+      const istTime = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + (330 * 60000));
+      
+      const istHours = istTime.getHours();
+      
+      const cycleDate = new Date(istTime);
+      if (istHours < 10) {
+        cycleDate.setDate(cycleDate.getDate() - 1);
+      }
+      
+      const yyyy = cycleDate.getFullYear();
+      const mm = String(cycleDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(cycleDate.getDate()).padStart(2, '0');
+      
+      return {
+        epochId: `bbit_drop_10am_${yyyy}-${mm}-${dd}`,
+        dateString: `${yyyy}-${mm}-${dd}`,
+        displayDate: cycleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      };
+    }
+
+    /**
+     * Live ticker calculating time remaining until the next 10:00 AM IST drop.
+     */
+    function update10AMCountdownTicker() {
+      const now = new Date();
+      const istTime = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + (330 * 60000));
+      
+      // Calculate target next 10:00 AM in IST
+      const next10AM = new Date(istTime);
+      if (istTime.getHours() >= 10) {
+        next10AM.setDate(next10AM.getDate() + 1);
+      }
+      next10AM.setHours(10, 0, 0, 0);
+
+      const diffMs = next10AM.getTime() - istTime.getTime();
+      const hours = Math.floor(diffMs / (1000 * 60 * 60));
+      const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+      const formatted = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      
+      const countdownEl = document.getElementById('header-drop-countdown');
+      if (countdownEl) {
+        countdownEl.innerText = formatted;
+      }
+
+      const cycle = getDaily10AMEpoch();
+      const cycleLabel = document.getElementById('daily-cycle-label');
+      if (cycleLabel) {
+        cycleLabel.innerText = `Daily 10:00 AM Drop: ${cycle.displayDate}`;
+      }
+    }
+    setInterval(update10AMCountdownTicker, 1000);
+
+    /* =========================================================================
+       4. TOPIC QUESTION REPOSITORIES
+       ========================================================================= */
+    const TOPIC_PRESETS = {
+      c_lang: {
+        title: "C Pointers & Memory Allocation",
+        questions: [
+          {
+            q: "What is the output of this C pointer arithmetic expression?",
+            code: `#include <stdio.h>\nint main() {\n    int arr[] = {10, 20, 30, 40};\n    int *p = arr;\n    int val1 = *p++;\n    int val2 = *++p;\n    printf("%d, %d, %d", val1, val2, *p);\n    return 0;\n}`,
+            options: ["10, 30, 30", "10, 20, 20", "20, 30, 40", "10, 30, 40"],
+            correct: 0,
+            reason: "*p++ evaluates to *p (10) before incrementing p to index 1. Then *++p increments p to index 2 first, dereferencing to 30. *p remains 30.",
+            ytTitle: "C Pointer Arithmetic & Dereference Precedence",
+            ytQuery: "https://www.youtube.com/results?search_query=C+pointer+arithmetic+precedence+operator+explained"
+          },
+          {
+            q: "What does sizeof output when an array is passed into a function?",
+            code: `#include <stdio.h>\nvoid inspect(int arr[]) {\n    printf("%zu ", sizeof(arr));\n}\nint main() {\n    int data[5] = {1, 2, 3, 4, 5};\n    printf("%zu ", sizeof(data));\n    inspect(data);\n    return 0;\n}`,
+            options: ["20 8", "20 20", "5 5", "20 4"],
+            correct: 0,
+            reason: "In main(), sizeof(data) returns total bytes (5 * 4 = 20). In inspect(int arr[]), the array decays into a pointer (int*), which is 8 bytes on 64-bit systems.",
+            ytTitle: "Why Arrays Decay to Pointers in C Functions",
+            ytQuery: "https://www.youtube.com/results?search_query=C+array+decay+to+pointer+sizeof"
+          },
+          {
+            q: "What is the result of modifying a string literal in C?",
+            code: `#include <stdio.h>\nint main() {\n    char str[] = "BBIT";\n    char *ptr = "GATE";\n    str[0] = 'X';\n    printf("%c%s", str[0], ptr);\n    return 0;\n}`,
+            options: ["XGATE", "BBITGATE", "Segmentation Fault", "Compilation Error"],
+            correct: 0,
+            reason: "str is an array on the stack so modifying str[0] is valid. ptr points to read-only string memory, but since we didn't write to ptr[0], it prints XGATE safely.",
+            ytTitle: "C String Literals vs Stack Arrays Memory",
+            ytQuery: "https://www.youtube.com/results?search_query=C+string+literals+vs+char+arrays+memory"
+          },
+          {
+            q: "Evaluate the post and pre-decrement pointer expressions:",
+            code: `#include <stdio.h>\nint main() {\n    int a[] = {1, 2, 3, 4, 5};\n    int *p = a + 3;\n    printf("%d ", *(p--));\n    printf("%d", *p);\n    return 0;\n}`,
+            options: ["4 3", "4 4", "3 3", "3 4"],
+            correct: 0,
+            reason: "p points to a[3] (4). *(p--) dereferences 4 first, then shifts p back to index 2 (value 3).",
+            ytTitle: "Pointer Post Decrement vs Pre Decrement in C",
+            ytQuery: "https://www.youtube.com/results?search_query=pointer+increment+decrement+in+c"
+          },
+          {
+            q: "What is printed by pointer subtraction in C?",
+            code: `#include <stdio.h>\nint main() {\n    int arr[6] = {10, 20, 30, 40, 50, 60};\n    int *p1 = &arr[1];\n    int *p2 = &arr[5];\n    printf("%td", p2 - p1);\n    return 0;\n}`,
+            options: ["4", "16", "5", "Undefined"],
+            correct: 0,
+            reason: "Subtracting two pointers of the same type yields the number of elements between them: 5 - 1 = 4 (ptrdiff_t).",
+            ytTitle: "Pointer Subtraction & Distance in C",
+            ytQuery: "https://www.youtube.com/results?search_query=pointer+subtraction+in+c+arrays"
+          },
+          {
+            q: "What is the difference between const int * and int * const?",
+            code: `#include <stdio.h>\nint main() {\n    int x = 10, y = 20;\n    const int *ptr = &x;\n    ptr = &y;\n    printf("%d", *ptr);\n    return 0;\n}`,
+            options: ["20", "10", "Compilation Error", "Garbage value"],
+            correct: 0,
+            reason: "const int * indicates the target integer value is constant, but the pointer itself can freely be pointed to &y.",
+            ytTitle: "Constant Pointers vs Pointer to Constant in C",
+            ytQuery: "https://www.youtube.com/results?search_query=const+pointer+vs+pointer+to+const+in+C"
+          },
+          {
+            q: "What will this double pointer modification print?",
+            code: `#include <stdio.h>\nint main() {\n    int val = 42;\n    int *p = &val;\n    int **pp = &p;\n    **pp += 8;\n    printf("%d", val);\n    return 0;\n}`,
+            options: ["50", "42", "Compilation Error", "Address of val"],
+            correct: 0,
+            reason: "**pp double dereferences to val directly. Adding 8 yields 42 + 8 = 50.",
+            ytTitle: "Double Pointers in C Explained",
+            ytQuery: "https://www.youtube.com/results?search_query=double+pointers+in+C+explained"
+          },
+          {
+            q: "What is the best practice after calling free() on a pointer?",
+            code: `#include <stdio.h>\n#include <stdlib.h>\nint main() {\n    int *p = (int*)malloc(sizeof(int));\n    *p = 100;\n    free(p);\n    p = NULL;\n    printf("%s", p == NULL ? "Safe" : "Dangling");\n    return 0;\n}`,
+            options: ["Safe", "Dangling", "Compilation Error", "Segmentation Fault"],
+            correct: 0,
+            reason: "Setting p = NULL immediately after free(p) eliminates the risk of accessing a dangling pointer.",
+            ytTitle: "Dangling Pointers and Safe Memory Deallocation in C",
+            ytQuery: "https://www.youtube.com/results?search_query=dangling+pointers+and+free+in+c"
+          },
+          {
+            q: "What is the output of negative indexing on pointers?",
+            code: `#include <stdio.h>\nint main() {\n    int arr[] = {100, 200, 300, 400};\n    int *p = &arr[2];\n    printf("%d", p[-1]);\n    return 0;\n}`,
+            options: ["200", "100", "300", "Garbage"],
+            correct: 0,
+            reason: "p[-1] translates to *(p - 1). Since p points to arr[2] (300), p - 1 points to arr[1] (200).",
+            ytTitle: "Negative Array Indexing with Pointers in C",
+            ytQuery: "https://www.youtube.com/results?search_query=negative+pointer+subscript+in+C"
+          },
+          {
+            q: "What does this pointer comparison evaluate to?",
+            code: `#include <stdio.h>\nint main() {\n    int arr[2] = {5, 10};\n    printf("%d", (&arr[1] > &arr[0]));\n    return 0;\n}`,
+            options: ["1", "0", "Undefined", "Compilation Error"],
+            correct: 0,
+            reason: "Pointer comparisons across elements within the same array are well-defined: higher elements reside at greater memory addresses.",
+            ytTitle: "Pointer Relational Comparisons in C",
+            ytQuery: "https://www.youtube.com/results?search_query=pointer+comparisons+rules+in+C"
+          },
+          {
+            q: "What does this function pointer invocation output?",
+            code: `#include <stdio.h>\nint square(int x) { return x * x; }\nint main() {\n    int (*fp)(int) = square;\n    printf("%d", (*fp)(5));\n    return 0;\n}`,
+            options: ["25", "5", "Address", "Compilation Error"],
+            correct: 0,
+            reason: "fp points to square. Invoking (*fp)(5) executes 5 * 5 = 25.",
+            ytTitle: "Function Pointers in C Tutorial",
+            ytQuery: "https://www.youtube.com/results?search_query=function+pointers+in+C+tutorial"
+          },
+          {
+            q: "What is the memory size of a union containing a double and int?",
+            code: `#include <stdio.h>\nunion Data {\n    int i;\n    double d;\n    char c[4];\n};\nint main() {\n    printf("%zu", sizeof(union Data));\n    return 0;\n}`,
+            options: ["8", "16", "12", "4"],
+            correct: 0,
+            reason: "A union allocates memory equal to its largest member. sizeof(double) is 8 bytes.",
+            ytTitle: "C Unions Memory Allocation and Size",
+            ytQuery: "https://www.youtube.com/results?search_query=unions+memory+allocation+in+c"
+          },
+          {
+            q: "What does this void pointer cast print?",
+            code: `#include <stdio.h>\nint main() {\n    char ch = 'A';\n    void *vp = &ch;\n    printf("%c", *(char*)vp);\n    return 0;\n}`,
+            options: ["A", "65", "Segmentation Fault", "Compilation Error"],
+            correct: 0,
+            reason: "A void pointer cannot be dereferenced directly without casting. Casting to (char*) allows correct dereferencing to 'A'.",
+            ytTitle: "Void Pointers and Type Casting in C",
+            ytQuery: "https://www.youtube.com/results?search_query=void+pointers+in+C+programming"
+          },
+          {
+            q: "What is the value of arr vs &arr in array pointer arithmetic?",
+            code: `#include <stdio.h>\nint main() {\n    int a[5] = {1, 2, 3, 4, 5};\n    int *p = (int*)(&a + 1);\n    printf("%d", *(p - 1));\n    return 0;\n}`,
+            options: ["5", "1", "Garbage", "4"],
+            correct: 0,
+            reason: "&a + 1 increments past the entire 5-element array. Casting back to int* and subtracting 1 points to a[4] (5).",
+            ytTitle: "Difference Between a and &a in C Arrays",
+            ytQuery: "https://www.youtube.com/results?search_query=difference+between+arr+and+address+of+arr+in+c"
+          },
+          {
+            q: "What does calloc initialize newly allocated memory to?",
+            code: `#include <stdio.h>\n#include <stdlib.h>\nint main() {\n    int *p = (int*)calloc(2, sizeof(int));\n    printf("%d %d", p[0], p[1]);\n    free(p);\n    return 0;\n}`,
+            options: ["0 0", "Garbage Garbage", "NULL NULL", "1 1"],
+            correct: 0,
+            reason: "Unlike malloc, calloc zeroes out all allocated memory bytes upon allocation.",
+            ytTitle: "malloc vs calloc in C Memory Management",
+            ytQuery: "https://www.youtube.com/results?search_query=malloc+vs+calloc+in+c"
+          }
+        ]
+      },
+
+      java_lang: {
+        title: "Java OOP & Polymorphism",
+        questions: [
+          {
+            q: "What is the output regarding static method hiding vs dynamic dispatch in Java?",
+            code: `class Parent {\n    static void display() { System.out.print("P_STATIC "); }\n    void render() { System.out.print("P_VIRTUAL "); }\n}\nclass Child extends Parent {\n    static void display() { System.out.print("C_STATIC "); }\n    void render() { System.out.print("C_VIRTUAL "); }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Parent obj = new Child();\n        obj.display();\n        obj.render();\n    }\n}`,
+            options: ["P_STATIC C_VIRTUAL ", "C_STATIC C_VIRTUAL ", "P_STATIC P_VIRTUAL ", "Compilation Error"],
+            correct: 0,
+            reason: "Static methods are resolved at compile-time by reference type (Parent). Instance methods resolve at runtime via virtual method tables.",
+            ytTitle: "Method Hiding vs Method Overriding in Java",
+            ytQuery: "https://www.youtube.com/results?search_query=java+method+hiding+vs+overriding+polymorphism"
+          },
+          {
+            q: "What prints when calling an overridable method inside a constructor?",
+            code: `class Base {\n    int x = 10;\n    Base() { print(); }\n    void print() { System.out.print(x + " "); }\n}\nclass Derived extends Base {\n    int x = 20;\n    void print() { System.out.print(x + " "); }\n}\npublic class Main {\n    public static void main(String[] args) {\n        new Derived();\n    }\n}`,
+            options: ["0 ", "10 ", "20 ", "NullPointerException"],
+            correct: 0,
+            reason: "Base constructor calls Derived's overridden print() before Derived's field initialization runs; primitive int x is still default 0.",
+            ytTitle: "Never Call Overridable Methods in Java Constructors",
+            ytQuery: "https://www.youtube.com/results?search_query=calling+overridable+methods+in+constructor+java"
+          },
+          {
+            q: "What does this string pool comparison evaluate to?",
+            code: `public class Main {\n    public static void main(String[] args) {\n        String s1 = "BBIT";\n        String s2 = new String("BBIT");\n        String s3 = s2.intern();\n        System.out.println((s1 == s2) + " " + (s1 == s3));\n    }\n}`,
+            options: ["false true", "true true", "false false", "true false"],
+            correct: 0,
+            reason: "s2 is created on the heap, so s1 == s2 is false. s2.intern() returns the string pool reference, matching s1.",
+            ytTitle: "Java String Pool and intern() Explained",
+            ytQuery: "https://www.youtube.com/results?search_query=java+string+pool+intern+method+explained"
+          },
+          {
+            q: "What is printed by finally when return occurs in try?",
+            code: `public class Main {\n    static int test() {\n        try {\n            return 1;\n        } finally {\n            return 2;\n        }\n    }\n    public static void main(String[] args) {\n        System.out.println(test());\n    }\n}`,
+            options: ["2", "1", "Compilation Error", "0"],
+            correct: 0,
+            reason: "A return statement in a finally block overrides any previous return statement in the try or catch block.",
+            ytTitle: "Java Try Catch Finally Return Precedence",
+            ytQuery: "https://www.youtube.com/results?search_query=java+finally+block+return+statement+execution"
+          },
+          {
+            q: "What is the result of autoboxing caching for integers?",
+            code: `public class Main {\n    public static void main(String[] args) {\n        Integer a = 100, b = 100;\n        Integer c = 200, d = 200;\n        System.out.println((a == b) + " " + (c == d));\n    }\n}`,
+            options: ["true false", "true true", "false false", "false true"],
+            correct: 0,
+            reason: "Java caches Integer instances between -128 and 127. Values outside that range create distinct heap objects.",
+            ytTitle: "Java Integer Cache Autoboxing Gotcha",
+            ytQuery: "https://www.youtube.com/results?search_query=java+integer+cache+autoboxing"
+          }
+        ]
+      },
+
+      python_lang: {
+        title: "Python Scope & Closures",
+        questions: [
+          {
+            q: "What is the output of late binding closures in Python loops?",
+            code: `def make_multipliers():\n    funcs = []\n    for i in range(3):\n        funcs.append(lambda x: x * i)\n    return funcs\n\nmultipliers = make_multipliers()\nresults = [f(2) for f in multipliers]\nprint(results)`,
+            options: ["[4, 4, 4]", "[0, 2, 4]", "[0, 0, 0]", "[2, 4, 6]"],
+            correct: 0,
+            reason: "Python closures bind variables by reference at execution time. When called, the loop has completed with i = 2, so 2 * 2 = 4 for all functions.",
+            ytTitle: "Python Late Binding Closures in Loops",
+            ytQuery: "https://www.youtube.com/results?search_query=python+late+binding+closures+lambdas"
+          },
+          {
+            q: "What is the output when using mutable default arguments in Python?",
+            code: `def append_item(val, container=[]):\n    container.append(val)\n    return container\n\nprint(append_item(1), end=" ")\nprint(append_item(2), end=" ")\nprint(append_item(3, []), end=" ")\nprint(append_item(4))`,
+            options: ["[1] [1, 2] [3] [1, 2, 4]", "[1] [2] [3] [4]", "[1] [1, 2] [3] [4]", "[1] [1, 2] [1, 2, 3] [1, 2, 3, 4]"],
+            correct: 0,
+            reason: "Default arguments are evaluated once at function definition. The mutable list is shared across calls that don't provide a new container.",
+            ytTitle: "Python Mutable Default Arguments Gotcha",
+            ytQuery: "https://www.youtube.com/results?search_query=python+mutable+default+argument+danger"
+          },
+          {
+            q: "What does the following list comprehension with scoping print?",
+            code: `x = 10\n_ = [x for x in range(5)]\nprint(x)`,
+            options: ["10", "4", "5", "NameError"],
+            correct: 0,
+            reason: "In Python 3+, list comprehensions have their own local scope, preventing the loop variable x from leaking into the outer scope.",
+            ytTitle: "List Comprehension Variable Scoping in Python 3",
+            ytQuery: "https://www.youtube.com/results?search_query=python+list+comprehension+scope+leak"
+          },
+          {
+            q: "What does the 'is' identity operator output for small vs large integers?",
+            code: `a = 256\nb = 256\nc = 257\nd = 257\nprint((a is b), (c is d))`,
+            options: ["True False", "True True", "False False", "False True"],
+            correct: 0,
+            reason: "CPython pre-allocates small integer singletons from -5 to 256. Integers >= 257 generally receive distinct object identities.",
+            ytTitle: "CPython Integer Interning and 'is' vs '=='",
+            ytQuery: "https://www.youtube.com/results?search_query=python+integer+interning+is+vs+equals"
+          },
+          {
+            q: "What is the output of modifying a global variable without the 'global' keyword?",
+            code: `count = 0\ndef increment():\n    try:\n        count += 1\n    except UnboundLocalError:\n        print("Error", end="")\n\nincrement()`,
+            options: ["Error", "1", "None", "0"],
+            correct: 0,
+            reason: "Assigning to count inside increment() marks it as a local variable. Reading it before assignment raises an UnboundLocalError.",
+            ytTitle: "Python LEGB Scope Rule and UnboundLocalError",
+            ytQuery: "https://www.youtube.com/results?search_query=python+unboundlocalerror+global+keyword"
+          }
+        ]
+      },
+
+      js_lang: {
+        title: "JavaScript Event Loop & Async",
+        questions: [
+          {
+            q: "What is the execution order of microtasks vs macrotasks in the JS Event Loop?",
+            code: `console.log('1');\nsetTimeout(() => console.log('2'), 0);\nPromise.resolve().then(() => console.log('3'));\nconsole.log('4');`,
+            options: ["1 -> 4 -> 3 -> 2", "1 -> 2 -> 3 -> 4", "1 -> 3 -> 4 -> 2", "1 -> 4 -> 2 -> 3"],
+            correct: 0,
+            reason: "Synchronous code runs first (1, 4). The microtask queue (Promise 3) executes before macrotasks (setTimeout 2).",
+            ytTitle: "Microtasks vs Macrotasks in JavaScript Event Loop",
+            ytQuery: "https://www.youtube.com/results?search_query=javascript+event+loop+microtasks+macrotasks"
+          },
+          {
+            q: "What will this for loop with var in setTimeout log?",
+            code: `for (var i = 0; i < 3; i++) {\n    setTimeout(() => console.log(i), 0);\n}`,
+            options: ["3 3 3", "0 1 2", "undefined undefined undefined", "3 2 1"],
+            correct: 0,
+            reason: "var is function-scoped. By the time timeout callbacks run, the loop has completed with i = 3.",
+            ytTitle: "Var vs Let in For Loops SetTimeout Closure",
+            ytQuery: "https://www.youtube.com/results?search_query=var+vs+let+in+for+loop+settimeout"
+          },
+          {
+            q: "What does typeof NaN and NaN === NaN return in JavaScript?",
+            code: `console.log(typeof NaN, NaN === NaN);`,
+            options: ["number false", "NaN false", "number true", "undefined false"],
+            correct: 0,
+            reason: "In IEEE 754 and JavaScript specs, NaN has typeof 'number' and is never equal to itself.",
+            ytTitle: "Why typeof NaN is Number and NaN !== NaN in JS",
+            ytQuery: "https://www.youtube.com/results?search_query=why+typeof+nan+is+number+javascript"
+          },
+          {
+            q: "What will this object destructuring with default value print?",
+            code: `const { a = 10, b = 20 } = { a: null, b: undefined };\nconsole.log(a, b);`,
+            options: ["null 20", "10 20", "null undefined", "10 undefined"],
+            correct: 0,
+            reason: "Default values in destructuring only trigger for strictly undefined, not for null.",
+            ytTitle: "JavaScript Destructuring Default Values Null vs Undefined",
+            ytQuery: "https://www.youtube.com/results?search_query=javascript+destructuring+defaults+null+vs+undefined"
+          },
+          {
+            q: "What does this arrow function's 'this' binding log?",
+            code: `const obj = {\n    val: 42,\n    getVal: () => this.val\n};\nconsole.log(obj.getVal());`,
+            options: ["undefined", "42", "TypeError", "Window"],
+            correct: 0,
+            reason: "Arrow functions do not bind their own 'this'; they inherit lexically from the surrounding scope (window/global).",
+            ytTitle: "Arrow Functions This Keyword in JavaScript",
+            ytQuery: "https://www.youtube.com/results?search_query=arrow+functions+this+keyword+javascript"
+          }
+        ]
+      }
+    };
+
+    const TOPIC_NAMES = {
+      c_lang: 'C Pointers & Memory Allocation',
+      java_lang: 'Java OOP & Polymorphism',
+      python_lang: 'Python Scope & Closures',
+      js_lang: 'JavaScript Event Loop & Async',
+      cpp_lang: 'C++ STL & Modern Features',
+      dsa_track: 'Data Structures & Algorithms',
+      sql_track: 'SQL & Relational Databases',
+      web_dev: 'Web Dev & System APIs'
+    };
+
+    /* =========================================================================
+       5. 10 AM DAILY FRESH GENERATOR (AI + DETERMINISTIC SEED)
+       ========================================================================= */
+    async function fetchAiGeneratedDaily5(trackKey, trackTitle) {
+      const apiKey = localStorage.getItem(GEMINI_KEY_STORAGE) || "";
+      const cycle = getDaily10AMEpoch();
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+      const systemPrompt = `You are a Principal Software Engineer crafting competitive CS placement questions for BBIT Hackathon 2026.
+Generate exactly 5 completely fresh, high-yield code output prediction questions for the topic: "${trackTitle}" for today's 10:00 AM cycle (${cycle.dateString}).
+Rules:
+- Questions must test tricky compiler edge cases, memory precedence, or execution order.
+- Each question must include:
+  1. q: clear question text.
+  2. code: valid runnable code snippet.
+  3. options: array of 4 distinct string choices.
+  4. correct: index (0-3) of the correct option.
+  5. reason: line-by-line compiler/runtime explanation of why that output occurs.
+  6. ytTitle: specific YouTube video topic to master the concept.
+  7. ytQuery: direct search link starting with 'https://www.youtube.com/results?search_query=' followed by URL-encoded concept keywords.`;
+
+      const userPrompt = `Generate 5 fresh ${trackTitle} code output questions for today's 10:00 AM drop (${cycle.dateString}). Return strictly valid JSON adhering to the schema.`;
+
+      const payload = {
+        contents: [{ parts: [{ text: userPrompt }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                "q": { "type": "STRING" },
+                "code": { "type": "STRING" },
+                "options": {
+                  "type": "ARRAY",
+                  "items": { "type": "STRING" }
+                },
+                "correct": { "type": "INTEGER" },
+                "reason": { "type": "STRING" },
+                "ytTitle": { "type": "STRING" },
+                "ytQuery": { "type": "STRING" }
+              },
+              required: ["q", "code", "options", "correct", "reason", "ytTitle", "ytQuery"],
+              propertyOrdering: ["q", "code", "options", "correct", "reason", "ytTitle", "ytQuery"]
+            }
+          }
+        }
+      };
+
+      try {
+        if (!apiKey) throw new Error("No API key provided, running date-seeded 10 AM generator");
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`API returned status ${response.status}`);
+        const result = await response.json();
+        const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!jsonText) throw new Error("Empty candidate payload");
+        
+        const parsed = JSON.parse(jsonText);
+        if (Array.isArray(parsed) && parsed.length >= 5) {
+          return parsed.slice(0, 5);
+        }
+        throw new Error("Invalid array schema from AI");
+      } catch (err) {
+        console.debug("Applying deterministic date-seeded 10 AM generator for cycle: " + cycle.epochId);
+        return generateDateSeeded10AMDaily5(trackKey, cycle);
+      }
+    }
+
+    /**
+     * Deterministic Date-Seeded Generator for guaranteed 5 fresh daily questions per topic
+     * that automatically roll over at 10:00 AM IST.
+     */
+    function generateDateSeeded10AMDaily5(trackKey, cycle) {
+      let seed = 0;
+      for (let i = 0; i < cycle.dateString.length; i++) {
+        seed = (seed * 31 + cycle.dateString.charCodeAt(i)) % 10000;
+      }
+      for (let i = 0; i < trackKey.length; i++) {
+        seed = (seed * 19 + trackKey.charCodeAt(i)) % 10000;
+      }
+
+      const templates = [
+        {
+          concept: "Precedence Traps & Sequence Points",
+          code: `// Daily 10 AM Drop (${cycle.displayDate})\nint a = ${(seed % 6) + 3};\nint b = a++ + ++a * 2;\nprintf("%d, %d", a, b);`,
+          ans: `${(seed % 6) + 5}, ${((seed % 6) + 3) + (((seed % 6) + 5) * 2)}`,
+          reason: "Multiplication binds tighter than addition. Postfix a++ yields initial value before incrementing, and subsequent ++a mutates operand immediately.",
+          yt: "C Operator Precedence and Sequence Points Explained"
+        },
+        {
+          concept: "Bitwise Masking & Shift Arithmetic",
+          code: `// Daily 10 AM Drop (${cycle.displayDate})\nint mask = ${(seed % 14) + 2};\nint out = (mask << 1) ^ (mask >> 1);\nprintf("%d", out);`,
+          ans: `${((seed % 14) + 2 << 1) ^ ((seed % 14) + 2 >> 1)}`,
+          reason: "Bitwise left shift (<< 1) doubles the quantity, right shift (>> 1) halves it. The bitwise XOR (^) isolates differing binary bits.",
+          yt: "Bitwise Operators in Technical Interviews"
+        },
+        {
+          concept: "Recursive Call Frame Unwinding",
+          code: `// Daily 10 AM Drop (${cycle.displayDate})\nint solve(int n) {\n    if (n <= 1) return 1;\n    return n * solve(n - 2);\n}\n// Called as: solve(${(seed % 3) * 2 + 5})`,
+          ans: `${calculateDoubleFactorial((seed % 3) * 2 + 5)}`,
+          reason: "Decrements by 2 each recursive call, preserving call stack activations and unwinding via double factorial product.",
+          yt: "Recursion Stack Frames and Time Complexity"
+        },
+        {
+          concept: "Structure Padding & Alignment",
+          code: `// Daily 10 AM Drop (${cycle.displayDate})\nstruct MemoryBlock {\n    char flag;\n    int count;\n    char tag;\n};\nprintf("%zu", sizeof(struct MemoryBlock));`,
+          ans: "12 bytes",
+          reason: "On 32-bit and 64-bit architectures, 4-byte integers require 4-byte aligned offsets. 3 padding bytes follow both char members.",
+          yt: "Structure Padding and Data Alignment in C"
+        },
+        {
+          concept: "Static Storage Duration Lifetime",
+          code: `// Daily 10 AM Drop (${cycle.displayDate})\nvoid step() {\n    static int x = 10;\n    x += ${(seed % 5) + 2};\n    printf("%d ", x);\n}\n// Called 2 times consecutively`,
+          ans: `${10 + (seed % 5) + 2} ${10 + 2 * ((seed % 5) + 2)}`,
+          reason: "Static local variables preserve their values in the data segment across calls and are initialized once when loaded into memory.",
+          yt: "Static Variables in C Functions Lifecycle"
+        }
+      ];
+
+      return templates.map((t, idx) => ({
+        q: `10 AM Drop Q${idx + 1}: ${t.concept}`,
+        code: t.code,
+        options: [
+          t.ans,
+          "Segmentation Fault",
+          "Compilation Error / UB",
+          "0"
+        ],
+        correct: 0,
+        reason: t.reason,
+        ytTitle: `${t.concept} Mastery`,
+        ytQuery: `https://www.youtube.com/results?search_query=${encodeURIComponent(t.yt)}`
+      }));
+    }
+
+    function calculateDoubleFactorial(n) {
+      if (n <= 1) return 1;
+      return n * calculateDoubleFactorial(n - 2);
+    }
+
+    function getAllQuestionsForTrack(trackKey) {
+      if (TOPIC_PRESETS[trackKey]) {
+        return TOPIC_PRESETS[trackKey].questions;
+      }
+      const cycle = getDaily10AMEpoch();
+      return generateDateSeeded10AMDaily5(trackKey, cycle);
+    }
+
+    /* =========================================================================
+       6. FISHER-YATES SHUFFLE & OPTION JUMBLING
+       ========================================================================= */
+    function fisherYatesShuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    /**
+     * Jumbles options (A, B, C, D) so that the correct answer slot rotates unpredictably
+     * and maps new correct index correctly.
+     */
+    function jumbleSingleQuestion(questionObj) {
+      const originalCorrectText = questionObj.options[questionObj.correct];
+      
+      const mapped = questionObj.options.map((opt, idx) => ({
+        text: opt,
+        isCorrect: idx === questionObj.correct
+      }));
+
+      const shuffled = fisherYatesShuffle(mapped);
+      const newCorrectIdx = shuffled.findIndex(item => item.isCorrect);
+
+      return {
+        ...questionObj,
+        options: shuffled.map(item => item.text),
+        correct: newCorrectIdx,
+        originalCorrectText: originalCorrectText
+      };
+    }
+
+    /* =========================================================================
+       7. ARENA ENGINE CONTROLLER
+       ========================================================================= */
+    const arenaState = {
+      mode: 'daily5', // 'daily5' or 'full15'
+      topicKey: 'c_lang',
+      topicTitle: 'C Pointers & Memory Allocation',
+      questions: [],
+      currentIndex: 0,
+      records: [],
+      timerInterval: null,
+      secondsRemaining: 60,
+      startTime: 0,
+      isAnswered: false,
+      totalQuestions: 5
+    };
+
+    async function triggerQuizStart(trackKey) {
+      if (!currentContestant) {
+        showAuthModal();
+        triggerToast("Please enter your contestant details to start!");
+        return;
+      }
+
+      arenaState.mode = selectedQuizMode;
+      arenaState.topicKey = trackKey;
+      arenaState.topicTitle = TOPIC_NAMES[trackKey] || trackKey;
+      arenaState.records = [];
+      arenaState.currentIndex = 0;
+      arenaState.totalQuestions = (arenaState.mode === 'daily5') ? 5 : 15;
+
+      // Show AI loading screen
+      showLoadingScreen(true, arenaState.mode);
+
+      let questionSet = [];
+      if (arenaState.mode === 'daily5') {
+        questionSet = await fetchAiGeneratedDaily5(trackKey, arenaState.topicTitle);
+      } else {
+        // Full 15 question sprint
+        const pool = getAllQuestionsForTrack(trackKey);
+        questionSet = fisherYatesShuffle(pool).slice(0, 15);
+      }
+
+      // 1. Shuffle question sequence for this session
+      const shuffledQuestionList = fisherYatesShuffle(questionSet);
+
+      // 2. Jumble options for every question (A, B, C, D totally unpredictable)
+      arenaState.questions = shuffledQuestionList.map(q => jumbleSingleQuestion(q));
+      arenaState.startTime = Date.now();
+
+      showLoadingScreen(false);
+      navigateTo('quiz');
+
+      document.getElementById('arena-track-badge').innerText = arenaState.topicTitle;
+      document.getElementById('arena-mode-badge').innerText = (arenaState.mode === 'daily5') ? "Daily 5 Drop" : "15-Question Sprint";
+      
+      loadArenaQuestion(0);
+    }
+
+    function showLoadingScreen(show, mode) {
+      const loader = document.getElementById('view-loading');
+      const title = document.getElementById('loading-title');
+      const subtitle = document.getElementById('loading-subtitle');
+
+      if (show) {
+        document.getElementById('view-home').classList.add('hidden');
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-score').classList.add('hidden');
+        document.getElementById('view-leaderboard').classList.add('hidden');
+
+        if (mode === 'daily5') {
+          title.innerText = "Synthesizing Today's 10 AM Drop...";
+          subtitle.innerText = "Generating 5 new placement challenges with jumbled options & verified YouTube links.";
+        } else {
+          title.innerText = "Preparing 15-Question Sprint...";
+          subtitle.innerText = "Jumbling question sequences and randomizing A/B/C/D option slots.";
+        }
+        loader.classList.remove('hidden');
+      } else {
+        loader.classList.add('hidden');
+      }
+    }
+
+    function loadArenaQuestion(index) {
+      if (index >= arenaState.totalQuestions || index >= arenaState.questions.length) {
+        completeQuizAndDisplayScorecard();
+        return;
+      }
+
+      arenaState.currentIndex = index;
+      arenaState.isAnswered = false;
+
+      const q = arenaState.questions[index];
+
+      // Update counters & progress bar
+      document.getElementById('arena-q-indicator').innerText = `Question ${index + 1} of ${arenaState.totalQuestions}`;
+      const progressPercent = ((index + 1) / arenaState.totalQuestions) * 100;
+      document.getElementById('arena-progress-bar').style.width = `${progressPercent}%`;
+
+      // Set snippet and question text
+      document.getElementById('arena-question-text').innerText = q.q;
+      document.getElementById('arena-code-block').textContent = q.code;
+
+      // Populate jumbled options
+      const container = document.getElementById('arena-options-container');
+      container.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+
+      q.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.id = `arena-opt-btn-${optIdx}`;
+        btn.onclick = () => handleOptionSelection(optIdx);
+        btn.className = "w-full text-left p-3.5 sm:p-4 rounded-xl border border-slate-200 hover:border-[#2563eb] hover:bg-blue-50/40 text-slate-800 text-xs sm:text-sm font-medium flex items-center justify-between group transition-all active:scale-[0.99] bg-white";
+        
+        btn.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-6 h-6 rounded-md bg-slate-100 group-hover:bg-[#2563eb] group-hover:text-white font-bold text-xs flex items-center justify-center transition-colors text-slate-600">
+              ${letters[optIdx]}
+            </span>
+            <span class="font-mono text-slate-800">${escapeHtml(optText)}</span>
+          </div>
+          <span class="text-xs text-slate-400 font-mono hidden sm:inline">[${letters[optIdx]}]</span>
+        `;
+        container.appendChild(btn);
+      });
+
+      // Hide feedback drawer
+      document.getElementById('arena-feedback-drawer').classList.add('hidden');
+
+      // Start 60-second countdown timer
+      startArenaTimer();
+      lucide.createIcons();
+    }
+
+    function startArenaTimer() {
+      clearInterval(arenaState.timerInterval);
+      arenaState.secondsRemaining = 60;
+      updateTimerBadge();
+
+      arenaState.timerInterval = setInterval(() => {
+        arenaState.secondsRemaining--;
+        updateTimerBadge();
+
+        if (arenaState.secondsRemaining <= 10 && arenaState.secondsRemaining > 0) {
+          soundEngine.playTick();
+        }
+
+        if (arenaState.secondsRemaining <= 0) {
+          clearInterval(arenaState.timerInterval);
+          handleOptionSelection(-1); // Timeout
+        }
+      }, 1000);
+    }
+
+    function updateTimerBadge() {
+      const lbl = document.getElementById('arena-timer-txt');
+      lbl.innerText = `${arenaState.secondsRemaining}s`;
+      if (arenaState.secondsRemaining <= 10) {
+        lbl.className = "font-mono font-bold text-sm text-red-600 animate-pulse";
+      } else {
+        lbl.className = "font-mono font-bold text-sm text-slate-800";
+      }
+    }
+
+    function handleOptionSelection(chosenIndex) {
+      if (arenaState.isAnswered) return;
+      arenaState.isAnswered = true;
+      clearInterval(arenaState.timerInterval);
+
+      const q = arenaState.questions[arenaState.currentIndex];
+      const isCorrect = (chosenIndex === q.correct);
+      const timeSpent = 60 - arenaState.secondsRemaining;
+
+      arenaState.records.push({
+        question: q,
+        chosenIdx: chosenIndex,
+        isCorrect: isCorrect,
+        timeSpent: timeSpent
+      });
+
+      // Highlight options
+      q.options.forEach((_, idx) => {
+        const btn = document.getElementById(`arena-opt-btn-${idx}`);
+        if (!btn) return;
+        if (idx === q.correct) {
+          btn.className = "w-full text-left p-3.5 sm:p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 text-xs sm:text-sm font-semibold flex items-center justify-between";
+        } else if (idx === chosenIndex && !isCorrect) {
+          btn.className = "w-full text-left p-3.5 sm:p-4 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-950 text-xs sm:text-sm font-semibold flex items-center justify-between";
+        } else {
+          btn.className = "w-full text-left p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 text-xs sm:text-sm font-medium flex items-center justify-between opacity-50";
+        }
+      });
+
+      // Play Sound FX
+      if (isCorrect) {
+        soundEngine.playCorrectSound();
+      } else {
+        soundEngine.playWrongSound();
+      }
+
+      showFeedbackDrawer(isCorrect, q);
+    }
+
+    function showFeedbackDrawer(isCorrect, q) {
+      const drawer = document.getElementById('arena-feedback-drawer');
+      const icon = document.getElementById('feedback-icon');
+      const heading = document.getElementById('feedback-heading');
+      const correctKey = document.getElementById('feedback-correct-key');
+      const body = document.getElementById('feedback-explanation-body');
+      const videoTitle = document.getElementById('feedback-video-title');
+      const videoAnchor = document.getElementById('feedback-video-anchor');
+      const nextBtn = document.getElementById('arena-btn-next');
+
+      if (isCorrect) {
+        icon.className = "w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0";
+        icon.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i>`;
+        heading.innerText = "Accurate Prediction!";
+        heading.className = "font-extrabold text-sm sm:text-base text-emerald-700";
+      } else {
+        icon.className = "w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0";
+        icon.innerHTML = `<i data-lucide="x" class="w-4 h-4"></i>`;
+        heading.innerText = arenaState.secondsRemaining <= 0 ? "Time Expired!" : "Compiler Trap Triggered!";
+        heading.className = "font-extrabold text-sm sm:text-base text-rose-600";
+      }
+
+      correctKey.innerText = `Expected Output: "${q.options[q.correct]}"`;
+      body.innerText = q.reason;
+      videoTitle.innerText = q.ytTitle;
+      videoAnchor.href = q.ytQuery;
+
+      const isLastQ = arenaState.currentIndex === (arenaState.totalQuestions - 1);
+      nextBtn.innerHTML = `<span>${isLastQ ? 'View Scorecard' : 'Next Question'}</span><i data-lucide="${isLastQ ? 'award' : 'arrow-right'}" class="w-4 h-4"></i>`;
+
+      drawer.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function advanceNextQuestion() {
+      loadArenaQuestion(arenaState.currentIndex + 1);
+    }
+
+    function abandonQuiz() {
+      if (confirm("Quit current quiz? Your progress will not be saved.")) {
+        clearInterval(arenaState.timerInterval);
+        navigateTo('home');
+      }
+    }
+
+    /* =========================================================================
+       8. SCORECARD, WHATSAPP SHARING & ANSWERS RECAP
+       ========================================================================= */
+    function completeQuizAndDisplayScorecard() {
+      clearInterval(arenaState.timerInterval);
+
+      const totalCorrect = arenaState.records.filter(r => r.isCorrect).length;
+      const totalQ = arenaState.totalQuestions;
+      const accuracy = Math.round((totalCorrect / totalQ) * 100);
+      const totalSeconds = Math.round((Date.now() - arenaState.startTime) / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      const formattedTime = `${minutes}m ${seconds}s`;
+
+      const cycle = getDaily10AMEpoch();
+      const modeLabel = (arenaState.mode === 'daily5') ? `Daily 5 Drop (${cycle.displayDate})` : '15-Question Sprint';
+
+      // Save to real verified leaderboard
+      recordScoreInRealLeaderboard({
+        name: currentContestant.name,
+        email: currentContestant.email,
+        mode: modeLabel,
+        track: arenaState.topicTitle,
+        score: `${totalCorrect}/${totalQ}`,
+        accuracy: `${accuracy}%`,
+        timeTaken: formattedTime,
+        timestamp: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+      });
+
+      // Update UI elements
+      document.getElementById('card-mode-subtitle').innerText = `${modeLabel.toUpperCase()} COMPLETE`;
+      document.getElementById('card-hero-greeting').innerText = `Outstanding Run, ${currentContestant.name}!`;
+      document.getElementById('card-track-title').innerText = `Topic: ${arenaState.topicTitle}`;
+      document.getElementById('score-metric-correct').innerText = `${totalCorrect} / ${totalQ}`;
+      document.getElementById('score-metric-accuracy').innerText = `${accuracy}%`;
+      document.getElementById('score-metric-time').innerText = formattedTime;
+
+      renderScorecardReviewList();
+      navigateTo('score');
+
+      // Trigger Confetti for high scores
+      if ((accuracy >= 70) && typeof confetti === 'function') {
+        confetti({ particleCount: 75, spread: 85, origin: { y: 0.6 } });
+      }
+    }
+
+    function renderScorecardReviewList() {
+      const container = document.getElementById('scorecard-review-drawer');
+      container.innerHTML = '';
+
+      arenaState.records.forEach((rec, idx) => {
+        const item = document.createElement('div');
+        item.className = `p-4 rounded-2xl border text-left text-xs ${rec.isCorrect ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'} space-y-2`;
+        
+        item.innerHTML = `
+          <div class="flex items-center justify-between font-bold">
+            <span class="font-mono text-slate-800">Q${idx + 1}: ${escapeHtml(rec.question.q)}</span>
+            <span class="${rec.isCorrect ? 'text-emerald-700' : 'text-rose-600'} flex items-center gap-1">
+              <i data-lucide="${rec.isCorrect ? 'check-circle' : 'x-circle'}" class="w-4 h-4"></i>
+              ${rec.isCorrect ? 'Correct (+1)' : 'Incorrect (0)'}
+            </span>
+          </div>
+          <p class="font-mono text-slate-700"><strong>Correct Answer:</strong> ${escapeHtml(rec.question.options[rec.question.correct])}</p>
+          <p class="text-slate-600 leading-relaxed"><strong>Technical Reason:</strong> ${escapeHtml(rec.question.reason)}</p>
+          <div class="pt-1">
+            <a href="${rec.question.ytQuery}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-red-600 font-bold hover:underline">
+              <i data-lucide="play" class="w-3.5 h-3.5 fill-red-600"></i>
+              <span>Watch Concept: ${escapeHtml(rec.question.ytTitle)}</span>
+            </a>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+      lucide.createIcons();
+    }
+
+    function toggleAnswerReviewList() {
+      const drawer = document.getElementById('scorecard-review-drawer');
+      const label = document.getElementById('review-btn-label');
+      if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        label.innerText = "Hide Answer Review";
+      } else {
+        drawer.classList.add('hidden');
+        label.innerText = "Review All Answers & Video Links";
+      }
+    }
+
+    function buildScorecardShareText() {
+      const correctCount = arenaState.records.filter(r => r.isCorrect).length;
+      const totalQ = arenaState.totalQuestions;
+      const cycle = getDaily10AMEpoch();
+      const modeStr = (arenaState.mode === 'daily5') ? `Daily 10 AM Drop (${cycle.displayDate})` : '15-Question Sprint';
+      return `🔥 I scored ${correctCount}/${totalQ} on ${arenaState.topicTitle} in the BBIT ${modeStr}! Test your compiler output prediction skills here!`;
+    }
+
+    function shareViaWhatsApp() {
+      const text = encodeURIComponent(buildScorecardShareText());
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+    }
+
+    function copyScorecardText() {
+      const text = buildScorecardShareText();
+      const input = document.createElement('textarea');
+      input.value = text;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      triggerToast("Scorecard copied to clipboard!");
+    }
+
+    /* =========================================================================
+       9. REAL CONTESTANTS CAMPUS LEADERBOARD
+       ========================================================================= */
+    function recordScoreInRealLeaderboard(entry) {
+      try {
+        let board = JSON.parse(localStorage.getItem(LEADERBOARD_STORAGE_KEY) || '[]');
+        board.push(entry);
+        localStorage.setItem(LEADERBOARD_STORAGE_KEY, JSON.stringify(board));
+      } catch (e) {
+        console.error("Leaderboard write failed", e);
+      }
+    }
+
+    function renderRealLeaderboardTable() {
+      const tbody = document.getElementById('leaderboard-tbody');
+      tbody.innerHTML = '';
+
+      let records = [];
+      try {
+        records = JSON.parse(localStorage.getItem(LEADERBOARD_STORAGE_KEY) || '[]');
+      } catch (e) {
+        records = [];
+      }
+
+      if (records.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-12 text-center text-slate-400">
+              <div class="flex flex-col items-center justify-center space-y-2">
+                <i data-lucide="award" class="w-8 h-8 text-slate-300"></i>
+                <p class="font-medium text-slate-500">No recorded scores yet. Complete today's 10:00 AM challenge to be ranked!</p>
+                <button onclick="navigateTo('home')" class="text-xs text-[#2563eb] font-bold hover:underline">
+                  Take Daily 10 AM Drop &rarr;
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      // Sort by accuracy desc
+      records.sort((a, b) => parseInt(b.accuracy) - parseInt(a.accuracy));
+
+      records.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        const isCurrentPlayer = currentContestant && (row.email === currentContestant.email);
+        tr.className = isCurrentPlayer ? "bg-blue-50/70 font-semibold" : "hover:bg-slate-50";
+
+        let rankBadge = `<span class="text-slate-400 font-bold">#${idx + 1}</span>`;
+        if (idx === 0) rankBadge = `<span class="text-yellow-500 font-bold">🥇 1st</span>`;
+        if (idx === 1) rankBadge = `<span class="text-slate-400 font-bold">🥈 2nd</span>`;
+        if (idx === 2) rankBadge = `<span class="text-amber-700 font-bold">🥉 3rd</span>`;
+
+        tr.innerHTML = `
+          <td class="py-3.5 px-3">${rankBadge}</td>
+          <td class="py-3.5 px-3">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-900">${escapeHtml(row.name)}</span>
+              ${isCurrentPlayer ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-[#2563eb] text-white">You</span>' : ''}
+            </div>
+          </td>
+          <td class="py-3.5 px-3 text-slate-600 text-xs">
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-mono text-[10px] mr-1.5">${escapeHtml(row.mode)}</span>
+            ${escapeHtml(row.track)}
+          </td>
+          <td class="py-3.5 px-3 font-mono font-bold text-slate-900">${row.score}</td>
+          <td class="py-3.5 px-3 text-[#2563eb] font-mono">${row.accuracy}</td>
+          <td class="py-3.5 px-3 text-right text-slate-400 text-xs font-mono">${row.timestamp}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      lucide.createIcons();
+    }
+
+    /* =========================================================================
+       10. NAVIGATION, MODALS & GLOBAL KEYBOARD LISTENERS
+       ========================================================================= */
+    function navigateTo(viewId) {
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-loading').classList.add('hidden');
+      document.getElementById('view-quiz').classList.add('hidden');
+      document.getElementById('view-score').classList.add('hidden');
+      document.getElementById('view-leaderboard').classList.add('hidden');
+
+      document.getElementById('nav-btn-home').className = "hover:text-[#2563eb] transition-colors";
+      document.getElementById('nav-btn-leaderboard').className = "hover:text-[#2563eb] transition-colors";
+
+      if (viewId === 'home') {
+        document.getElementById('view-home').classList.remove('hidden');
+        document.getElementById('nav-btn-home').className = "text-[#2563eb] font-bold";
+      } else if (viewId === 'quiz') {
+        document.getElementById('view-quiz').classList.remove('hidden');
+      } else if (viewId === 'score') {
+        document.getElementById('view-score').classList.remove('hidden');
+      } else if (viewId === 'leaderboard') {
+        renderRealLeaderboardTable();
+        document.getElementById('view-leaderboard').classList.remove('hidden');
+        document.getElementById('nav-btn-leaderboard').className = "text-[#2563eb] font-bold";
+      }
+      lucide.createIcons();
+    }
+
+    function openRulesModal() {
+      document.getElementById('modal-info-title').innerText = "Placement Arena Contest Rules";
+      document.getElementById('modal-info-content').innerHTML = `
+        <p><strong>1. Daily 10 AM Drop:</strong> Every morning at 10:00 AM IST, 5 brand new tricky questions are automatically unlocked per topic with compiler reasons and YouTube tutorial remedies.</p>
+        <p><strong>2. 15-Question Sprint:</strong> A full placement simulation consisting of 15 non-repeating compiler prediction questions.</p>
+        <p><strong>3. Jumbled Unpredictable Options:</strong> Multiple-choice options (A, B, C, D) are shuffled randomly for every question so answer keys never stay in predictable positions.</p>
+        <p><strong>4. 60-Second Countdown:</strong> Each code snippet features a strict 60-second limit before auto-evaluating.</p>
+        <p><strong>5. Verified Leaderboard:</strong> Strictly authentic submissions from registered contestants are recorded.</p>
+      `;
+      document.getElementById('modal-info').classList.remove('hidden');
+    }
+
+    function openHelpModal() {
+      document.getElementById('modal-info-title').innerText = "Arena Support & Keyboard Shortcuts";
+      document.getElementById('modal-info-content').innerHTML = `
+        <p><strong>Keyboard Shortcuts:</strong> Press <kbd class="px-1.5 py-0.5 rounded bg-slate-100 font-mono">A</kbd>, <kbd class="px-1.5 py-0.5 rounded bg-slate-100 font-mono">B</kbd>, <kbd class="px-1.5 py-0.5 rounded bg-slate-100 font-mono">C</kbd>, <kbd class="px-1.5 py-0.5 rounded bg-slate-100 font-mono">D</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-slate-100 font-mono">1</kbd>, <kbd class="px-1.5 py-0.5 rounded bg-slate-100 font-mono">2</kbd>, <kbd class="px-1.5 py-0.5 rounded bg-slate-100 font-mono">3</kbd>, <kbd class="px-1.5 py-0.5 rounded bg-slate-100 font-mono">4</kbd> to rapidly pick answers.</p>
+        <p>Press <kbd class="px-1.5 py-0.5 rounded bg-slate-100 font-mono">Enter</kbd> to proceed to the next question when the solution drawer is visible.</p>
+        <p><strong>Audio Mute:</strong> Use the sound icon in the header to toggle procedural sound effects.</p>
+      `;
+      document.getElementById('modal-info').classList.remove('hidden');
+    }
+
+    function closeInfoModal() {
+      document.getElementById('modal-info').classList.add('hidden');
+    }
+
+    function openApiConfigModal() {
+      const storedKey = localStorage.getItem(GEMINI_KEY_STORAGE) || '';
+      document.getElementById('input-gemini-key').value = storedKey;
+      document.getElementById('modal-api-config').classList.remove('hidden');
+    }
+
+    function closeApiConfigModal() {
+      document.getElementById('modal-api-config').classList.add('hidden');
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById('input-gemini-key').value.trim();
+      if (key) {
+        localStorage.setItem(GEMINI_KEY_STORAGE, key);
+        triggerToast("Gemini API key saved!");
+      } else {
+        localStorage.removeItem(GEMINI_KEY_STORAGE);
+        triggerToast("Gemini API key cleared");
+      }
+      closeApiConfigModal();
+    }
+
+    function clearApiKey() {
+      localStorage.removeItem(GEMINI_KEY_STORAGE);
+      document.getElementById('input-gemini-key').value = '';
+      triggerToast("Gemini API key removed");
+      closeApiConfigModal();
+    }
+
+    function triggerToast(message) {
+      const toast = document.getElementById('toast-pill');
+      document.getElementById('toast-text-body').innerText = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Keyboard Shortcuts Listener
+    window.addEventListener('keydown', (e) => {
+      if (document.getElementById('view-quiz').classList.contains('hidden')) return;
+
+      const key = e.key.toUpperCase();
+      let optIdx = -1;
+
+      if (['A', '1'].includes(key)) optIdx = 0;
+      else if (['B', '2'].includes(key)) optIdx = 1;
+      else if (['C', '3'].includes(key)) optIdx = 2;
+      else if (['D', '4'].includes(key)) optIdx = 3;
+
+      if (optIdx !== -1 && !arenaState.isAnswered) {
+        handleOptionSelection(optIdx);
+      } else if (e.key === 'Enter' && arenaState.isAnswered) {
+        advanceNextQuestion();
+      }
+    });
+
+    // Lifecycle Bootstrap
+    window.addEventListener('load', () => {
+      initContestantSession();
+      update10AMCountdownTicker();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
+```
